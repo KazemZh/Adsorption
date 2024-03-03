@@ -1,0 +1,31 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter A
+  \item \spxentry{Adsorption}
+    \subitem \spxentry{module}, \hyperpage{4}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{calculate\_molecule\_orientation()}\spxextra{in module Adsorption}, 
+		\hyperpage{4, 5}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{main()}\spxextra{in module Adsorption}, \hyperpage{4}
+  \item \spxentry{module}
+    \subitem \spxentry{Adsorption}, \hyperpage{4}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{read\_input\_files()}\spxextra{in module Adsorption}, \hyperpage{4, 5}
+  \item \spxentry{rotate\_molecule()}\spxextra{in module Adsorption}, \hyperpage{4}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{translate\_molecule()}\spxextra{in module Adsorption}, \hyperpage{5}
+
+\end{sphinxtheindex}

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adsorption &mdash; Adsorption Documentation 0.1.0-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f34cbc3c"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Adsorption Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module_documentation.html">Module Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Adsorption Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Adsorption</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Adsorption</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Author: Kazem Zhour</span>
+
+<span class="sd">Date: 26.04.2024</span>
+
+<span class="sd">Description: Adsorption of molecules on surfaces.</span>
+<span class="sd">	This Python script facilitates the adsorption of molecules onto surfaces, offering the flexibility to</span>
+<span class="sd">	manipulate both the adsorption position and the orientation of the molecule.</span>
+
+<span class="sd">Usage: This script requires input files for the surface and the molecule. The user will be prompted </span>
+<span class="sd">	to enter the filenames for these input files. Additionally, the script prompts the user to </span>
+<span class="sd">	specify the origin and head atoms for defining the direction along the molecule, the angle </span>
+<span class="sd">	for rotating the molecule around the z-axis, the atom of the slab on which to adsorb the </span>
+<span class="sd">	molecule, and the desired adsorption height.</span>
+
+<span class="sd">Dependencies: This script requires the Atomic Simulation Environment (ASE) library for reading and </span>
+<span class="sd">	writing structure files. ASE can handle various file formats such as POSCAR, xyz, and cif.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    python3 Adsorption.py surface_file.vasp molecule_file.xyz --origine 0 --vertex 1 --adsorb_index 2 --height 3.5</span>
+<span class="sd">    </span>
+<span class="sd">    This example demonstrates how to use the script to perform adsorption of a molecule on a surface. </span>
+<span class="sd">    The user is prompted to input the filenames of the surface and molecule files, as well as the indices </span>
+<span class="sd">    of the atoms defining the direction of the molecule. Then, the user specifies the index of the atom on </span>
+<span class="sd">    the surface for adsorption and the desired adsorption height. The script generates an output containing </span>
+<span class="sd">    the combined structure of the surface and the adsorbed molecule.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ase.io</span> <span class="kn">import</span> <span class="n">write</span><span class="p">,</span> <span class="n">read</span>
+
+<div class="viewcode-block" id="read_input_files">
+<a class="viewcode-back" href="../module_documentation.html#Adsorption.read_input_files">[docs]</a>
+<span class="k">def</span> <span class="nf">read_input_files</span><span class="p">(</span><span class="n">surface_file</span><span class="p">,</span> <span class="n">molecule_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads input files for surface and molecule.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        surface (ASE Atoms object): The surface structure.</span>
+<span class="sd">        molecule (ASE Atoms object): The molecule structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+    	<span class="c1"># Read surface and molecule file names</span>
+        <span class="n">surface</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">surface_file</span><span class="p">)</span>
+        <span class="n">molecule</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">molecule_file</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: File not found.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">surface</span><span class="p">,</span> <span class="n">molecule</span></div>
+
+<div class="viewcode-block" id="calculate_molecule_orientation">
+<a class="viewcode-back" href="../module_documentation.html#Adsorption.calculate_molecule_orientation">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_molecule_orientation</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">origine</span><span class="p">,</span> <span class="n">vertex</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the orientation of the molecule based on user input.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        molecule (ASE Atoms object): The molecule structure.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        phi (float): Azimuthal angle.</span>
+<span class="sd">        theta (float): Polar angle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">origine</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">origine</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span> <span class="ow">or</span> <span class="n">vertex</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">vertex</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">molecule</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid atom indices.&quot;</span><span class="p">)</span>
+        <span class="c1"># Calculate vector along the molecule axis</span>
+        <span class="n">origin_coords</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="n">origine</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+        <span class="n">second_atom_coords</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="n">vertex</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+        <span class="n">vector</span> <span class="o">=</span> <span class="n">second_atom_coords</span> <span class="o">-</span> <span class="n">origin_coords</span>
+        <span class="c1"># Calculate spherical coordinates</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">vector</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">vector</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">vector</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span></div>
+
+
+<div class="viewcode-block" id="rotate_molecule">
+<a class="viewcode-back" href="../module_documentation.html#Adsorption.rotate_molecule">[docs]</a>
+<span class="k">def</span> <span class="nf">rotate_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rotates the molecule to align with the calculated orientation.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        molecule (ASE Atoms object): The molecule structure.</span>
+<span class="sd">        phi (float): Azimuthal angle.</span>
+<span class="sd">        theta (float): Polar angle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Molecule must have at least two atoms for rotation.&quot;</span><span class="p">)</span>
+        <span class="c1"># Shift molecule to the origin</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">positions</span> <span class="o">-=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Rotate molecule around z and y axes</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="n">theta</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="translate_molecule">
+<a class="viewcode-back" href="../module_documentation.html#Adsorption.translate_molecule">[docs]</a>
+<span class="k">def</span> <span class="nf">translate_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">adsorb_index</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates the molecule to the adsorption site on the surface.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        molecule (ASE Atoms object): The molecule structure.</span>
+<span class="sd">        surface (ASE Atoms object): The surface structure.</span>
+<span class="sd">        adsorb_index (int): Index of the adsorption site atom in the surface.</span>
+<span class="sd">        height (float): Height of adsorption.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">adsorb_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">adsorb_index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid adsorption site index.&quot;</span><span class="p">)</span>
+        <span class="c1"># Calculate adsorption site coordinates</span>
+        <span class="n">x_ad</span><span class="p">,</span> <span class="n">y_ad</span><span class="p">,</span> <span class="n">z_ad</span> <span class="o">=</span> <span class="n">surface</span><span class="p">[</span><span class="n">adsorb_index</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">surface</span><span class="p">[</span><span class="n">adsorb_index</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">surface</span><span class="p">[</span><span class="n">adsorb_index</span><span class="p">]</span><span class="o">.</span><span class="n">z</span> <span class="o">+</span> <span class="n">height</span>
+        <span class="c1"># Translate molecule to adsorption site</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">positions</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_ad</span><span class="p">,</span> <span class="n">y_ad</span><span class="p">,</span> <span class="n">z_ad</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../module_documentation.html#Adsorption.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function to perform adsorption of molecules on surfaces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Adsorption of molecules on surfaces.&quot;</span><span class="p">)</span>
+    <span class="c1"># Create a command-line interface (CLI)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;surface_file&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Surface file name.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;molecule_file&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Molecule file name.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--origine&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Index of the origin atom.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--vertex&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Index of the head atom.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--adsorb_index&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Index of the atom for adsorption.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--height&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Height of adsorption.&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># Read input files</span>
+    <span class="n">surface</span><span class="p">,</span> <span class="n">molecule</span> <span class="o">=</span> <span class="n">read_input_files</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">surface_file</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">molecule_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">surface</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">molecule</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="c1"># Calculate molecule orientation</span>
+    <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">calculate_molecule_orientation</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">origine</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">vertex</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">theta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="c1"># Rotate molecule </span>
+    <span class="n">rotate_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+    <span class="c1"># Translate molecule to adsorption site</span>
+    <span class="n">translate_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">adsorb_index</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+    <span class="c1"># Combine surface and molecule</span>
+    <span class="n">interface</span> <span class="o">=</span> <span class="n">surface</span> <span class="o">+</span> <span class="n">molecule</span>
+    <span class="c1"># Write output file</span>
+    <span class="n">write</span><span class="p">(</span><span class="s1">&#39;POSCAR.vasp&#39;</span><span class="p">,</span> <span class="n">interface</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adsorption completed! Output written to &#39;POSCAR.vasp&#39;.&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Kazem Zhour.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
