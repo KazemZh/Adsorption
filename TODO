@@ -1,0 +1,19 @@
+# TODO List
+
+## High Priority
+- [done] Make the code directly excutable
+- [done] Make in excutable from any directory:
+  	sudo cp Adsorption_gui_ase ~/bin
+  	sudo cp Adsorption.py ~/bin
+  	sudo chmod +x Adsorption_gui_ase
+- [done] Add more function for manipulating the adsorption of molecule on the surface
+- [done] Add simple example files
+
+## Medium Priority
+- [ ] Make the code able to run on parallel cpus
+- [ ] Add an optimization feature via force filed or other cheap methodes
+- [ ] Add options to choose trhe fomrat of the output path
+
+## Low Priority
+
+

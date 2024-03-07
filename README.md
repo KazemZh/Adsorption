@@ -15,11 +15,12 @@ This Python script facilitates the adsorption of complex molecules onto surfaces
 2. **Install Dependencies**: Ensure you have Python installed, along with the Atomic Simulation Environment (ASE) library.
 3. **Run the Script**: Execute the `Adsorption.py` script and follow the prompts to specify input files and parameters.
 4. **View Results**: Check the generated output file (`POSCAR.vasp`) for the combined structure of the surface and the adsorbed molecule.
+5. **graphycal user interface (GUI)**: tkinter python package is required for runing the GUI version of the code.
 
 ## Example
-python3 Adsorption.py surface_file.vasp molecule_file.xyz --origine 0 --vertex 1 --adsorb_index 2 --height 3.5
+ppython3 Adsorption.py surface_file.vasp molecule_file.xyz --origine 0 --vertex 1 --adsorb_index 2 --height 3.5 --theta_z 30
 
-This example demonstrates how to use the script to perform adsorption of a molecule on a surface. The user is prompted to input the filenames of the surface and molecule files, as well as the indices of the atoms defining the direction of the molecule. Then, the user specifies the index of the atom on the surface for adsorption and the desired adsorption height.
+This example demonstrates how to use the script to perform adsorption of a molecule on a surface. The user is prompted to input the filenames of the surface and molecule files, as well as the indices of the atoms defining the direction of the molecule. Then, the user specifies the index of the atom on the surface for adsorption, the desired adsorption height, and the angle of rotation arround z axis.
 
 ## License
 This project is licensed under the GNU General Public License (GPL) version 3 - see the [LICENSE](LICENSE) file for details.
