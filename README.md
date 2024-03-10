@@ -1,3 +1,5 @@
+![logo](docs/logo.png)
+
 # Adsorption of Complex Molecules on Surfaces
 
 ## Overview
